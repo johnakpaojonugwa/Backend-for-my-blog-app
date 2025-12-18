@@ -1,24 +1,40 @@
 import Post from "../models/post.model.js"
 
 export const createPost = async (req, res) => {
-    const {
-        title,
-        content,
-        tags,
-    } = req.body || {};
+  try {
+    console.log("BODY:", req.body);
+    console.log("FILES:", req.files);
+    console.log("USER:", req.user);
 
-    const coverImage = req.files?.coverImage?.[0]?.path || null;
+    const { title, content, tags } = req.body;
+
+    let parsedTags = [];
+    try {
+      parsedTags = Array.isArray(tags) ? tags : JSON.parse(tags || "[]");
+    } catch (e) {
+      console.error("TAG PARSE ERROR:", e);
+      return res.status(400).json({ message: "Invalid tags format" });
+    }
+
+    const coverImage = req.files?.coverImage?.[0]?.path || "";
 
     const post = await Post.create({
-        title,
-        content,
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-        coverImage: coverImage,
-        author: req.user.id,
+      title,
+      content,
+      tags: parsedTags,
+      coverImage,
+      author: req.user._id
     });
 
-    res.status(201).json({ success: true, message: "Post created successfully", post });
-}
+    res.status(201).json(post);
+  } catch (err) {
+    console.error("CREATE POST ERROR:", err);
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message
+    });
+  }
+};
 
 export const getAllPosts = async (req, res) => {
     const posts = await Post.find().populate('author', '-password').sort({ createdAt: -1 });
