@@ -32,7 +32,7 @@ export const auth = (req, res, next) => {
 
     // Normalize user object
     req.user = {
-      _id: decoded.id,
+      id: decoded.id,
       role: decoded.role
     };
 
