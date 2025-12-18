@@ -23,7 +23,7 @@ export const createPost = async (req, res) => {
       content,
       tags: parsedTags,
       coverImage,
-      author: req.user._id
+      author: req.user.id
     });
 
     res.status(201).json(post);
