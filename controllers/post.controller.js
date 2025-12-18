@@ -1,26 +1,28 @@
 import Post from "../models/post.model.js"
 
 export const createPost = async (req, res) => {
-  const { title, content, tags } = req.body;
+    const {
+        title,
+        content,
+        tags,
+    } = req.body || {};
 
-  const coverImage =
-    req.files?.coverImage?.[0]?.path || "";
+    const coverImage = req.files?.coverImage?.[0]?.path || null;
 
-  const post = await Post.create({
-    title,
-    content,
-    tags: JSON.parse(tags),
-    coverImage,
-    author: req.user._id
-  });
+    const post = await Post.create({
+        title,
+        content,
+        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+        coverImage: coverImage,
+        author: req.user.id,
+    });
 
-  res.status(201).json(post);
-};
-
+    res.status(201).json({ success: true, message: "Post created successfully", post });
+}
 
 export const getAllPosts = async (req, res) => {
     const posts = await Post.find().populate('author', '-password').sort({ createdAt: -1 });
-    res.status(201).json({ success: true, total: posts.length, data: posts });
+    res.status(200).json({ success: true, total: posts.length, data: posts });
 }
 
 export const getMyPosts = async (req, res) => {
