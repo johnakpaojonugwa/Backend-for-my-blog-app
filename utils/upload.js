@@ -18,7 +18,7 @@ const storage = new CloudinaryStorage({
     params: (req, file) => {
         const folder = file.fieldname === 'avatar'
         ? 'teacher-avatar'
-        : (file.fieldname === 'coverImage')
+        : (file.fieldname === 'backCover' || file.fieldname === 'bookCover')
         ? 'course-avatar'
         : file.fieldname === 'student_avatar'
         ? 'student-avatar'
@@ -54,7 +54,7 @@ const upload = multer({
 
 }).fields([
     {name: 'avatar'},
-    {name: 'coverImage'},
+    {name: 'backCover'},
     {name: 'bookCover'},
     {name: 'student_avatar'},
     {name: 'course_avatar'},
