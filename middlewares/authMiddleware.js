@@ -6,7 +6,10 @@ export const auth = async (req, res, next) => {
         
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        req.user = {
+            id: decoded.id,
+            role: decoded.role,
+        };
         next();
     } catch (error) {
         res.status(401).json({ success: false, message: 'Invalid or expired token, pls login again' });
