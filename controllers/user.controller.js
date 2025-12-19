@@ -10,13 +10,14 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const { fullname, username, email, bio } = req.body || {};
+        const { fullname, username, email, role, bio } = req.body || {};
         const avatar = req.files?.avatar?.[0]?.path;
         
         const updates = {};
         if (fullname) updates.fullname = fullname;
         if (username) updates.username = username;
         if (email) updates.email = email;
+        if (role) updates.role = role;
         if (bio) updates.bio = bio;
         if (avatar) updates.avatar = avatar;
 

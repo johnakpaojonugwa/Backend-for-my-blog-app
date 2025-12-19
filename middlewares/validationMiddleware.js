@@ -77,7 +77,7 @@ export const validateComment = (req, res, next) => {
 };
 
 export const validateUpdateProfile = (req, res, next) => {
-    const { email, username } = req.body || {};
+    const { email, username, role } = req.body || {};
     
     const errors = [];
     
@@ -86,6 +86,9 @@ export const validateUpdateProfile = (req, res, next) => {
     }
     if (username && username.trim().length < 3) {
         errors.push("Username must be at least 3 characters");
+    }
+    if (role && !['user', 'admin'].includes(role)) {
+        errors.push("Role must be either 'user' or 'admin'");
     }
     
     if (errors.length > 0) {
