@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard (React)</title>
+    <style>
+      body{font-family:Inter,Segoe UI,Roboto,Arial;padding:20px;background:#f7f9fc}
+      .wrap{max-width:1100px;margin:0 auto}
+      header{display:flex;gap:12px;align-items:center}
+      .token{margin-left:auto;min-width:420px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+      .card{background:#fff;border-radius:8px;padding:12px;box-shadow:0 1px 2px rgba(20,20,40,0.04)}
+      .list-item{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #f0f4f8}
+      .muted{color:#666;font-size:13px}
+      button{background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+      button.secondary{background:#3b82f6}
+      input[type=text]{width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px}
+    </style>
+  </head>
+  <body>
+    <div id="root" class="wrap"></div>
+
+    <!-- React + Babel (development, no build) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel" src="/react-admin.js"></script>
+  </body>
+</html>
