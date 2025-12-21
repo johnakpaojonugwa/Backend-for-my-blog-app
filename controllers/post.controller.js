@@ -83,7 +83,7 @@ export const createPost = async (req, res) => {
         const post = await Post.create({
             title,
             content,
-            tags: Array.isArray(tags) ? tags : tags.split(","),
+            tags: Array.isArray(tags) ? tags :  (tags ? tags.split(",") : []),
             backCover,
             author: req.user.id,
         });
