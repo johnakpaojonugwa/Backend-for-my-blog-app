@@ -145,6 +145,38 @@ export const getMyPosts = async (req, res) => {
     }
 };
 
+import Post from "../models/post.model.js";
+
+/**
+ * GET SINGLE POST BY ID
+ */
+export const getPostById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find post by ID and populate author info (exclude password)
+    const post = await Post.findById(id).populate("author", "-password");
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      post,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 /**
  * DELETE POST
  */
