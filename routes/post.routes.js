@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/', auth, uploadMiddleware, validateCreatePost, createPost);
 router.get('/', auth, getAllPosts);
-router.get('/:id', auth, getMyPosts);
+router.get('/mine', auth, getMyPosts);
 router.delete('/:id', auth, deletePost);
 router.post('/:id/like', auth, likePost);
 router.post('/:id/dislike', auth, dislikePost);
