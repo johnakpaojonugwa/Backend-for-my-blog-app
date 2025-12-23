@@ -3,39 +3,52 @@ import Post from "../models/post.model.js";
 /**
  * CREATE POST
  */
+/**
+ * CREATE POST
+ */
 export const createPost = async (req, res) => {
-    try {
-        const { title, content, tags } = req.body || {};
+  try {
+    const { title, content, tags } = req.body || {};
 
-        if (!req.user?.id) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        if (!title || !content) {
-            return res.status(400).json({
-                success: false,
-                message: "Title and content are required",
-            });
-        }
-
-        const backCover = req.files?.backCover?.[0]?.path || null;
-
-        const post = await Post.create({
-            title,
-            content,
-            tags: Array.isArray(tags) ? tags :  (tags ? tags.split(",") : []),
-            backCover,
-            author: req.user.id,
-        });
-
-        res.status(201).json({
-            success: true,
-            message: "Post created successfully",
-            post,
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+
+    if (!title || !content) {
+      return res.status(400).json({
+        success: false,
+        message: "Title and content are required",
+      });
+    }
+
+    const backCover = req.files?.backCover?.[0]?.path || null;
+
+    // Clean tags
+    const rawTags = Array.isArray(tags)
+      ? tags
+      : tags
+      ? tags.split(",")
+      : [];
+    const cleanTags = rawTags
+      .map((tag) => tag?.trim())
+      .filter((tag) => tag && tag !== "undefined");
+
+    const post = await Post.create({
+      title,
+      content,
+      tags: cleanTags,
+      backCover,
+      author: req.user.id,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Post created successfully",
+      post,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 /**
