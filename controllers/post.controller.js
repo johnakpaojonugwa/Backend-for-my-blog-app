@@ -7,48 +7,50 @@ import Post from "../models/post.model.js";
  * CREATE POST
  */
 export const createPost = async (req, res) => {
-  try {
-    const { title, content, tags } = req.body || {};
+    try {
+        const { title, content, tags } = req.body || {};
 
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "Unauthorized" });
+        if (!req.user?.id) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        if (!title || !content) {
+            return res.status(400).json({
+                success: false,
+                message: "Title and content are required",
+            });
+        }
+
+        const backCover = req.files?.backCover?.[0]?.path || null;
+
+        // Clean tags
+        const rawTags = Array.isArray(tags)
+            ? tags
+            : tags
+                ? tags.split(",")
+                : [];
+        // Change this line in your controller:
+        const cleanTags = [...new Set(rawTags
+            .map((tag) => tag?.trim())
+            .filter((tag) => tag && tag !== "undefined")
+        )];
+
+        const post = await Post.create({
+            title,
+            content,
+            tags: cleanTags,
+            backCover,
+            author: req.user.id,
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Post created successfully",
+            post,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
-
-    if (!title || !content) {
-      return res.status(400).json({
-        success: false,
-        message: "Title and content are required",
-      });
-    }
-
-    const backCover = req.files?.backCover?.[0]?.path || null;
-
-    // Clean tags
-    const rawTags = Array.isArray(tags)
-      ? tags
-      : tags
-      ? tags.split(",")
-      : [];
-    const cleanTags = rawTags
-      .map((tag) => tag?.trim())
-      .filter((tag) => tag && tag !== "undefined");
-
-    const post = await Post.create({
-      title,
-      content,
-      tags: cleanTags,
-      backCover,
-      author: req.user.id,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Post created successfully",
-      post,
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
 };
 
 /**
@@ -103,29 +105,29 @@ export const getMyPosts = async (req, res) => {
  * GET SINGLE POST BY ID
  */
 export const getPostById = async (req, res) => {
-  try {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    // Find post by ID and populate author info (exclude password)
-    const post = await Post.findById(id).populate("author", "-password");
+        // Find post by ID and populate author info (exclude password)
+        const post = await Post.findById(id).populate("author", "-password");
 
-    if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found",
-      });
+        if (!post) {
+            return res.status(404).json({
+                success: false,
+                message: "Post not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            post,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-
-    res.status(200).json({
-      success: true,
-      post,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
 
 
