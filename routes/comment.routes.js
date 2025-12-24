@@ -6,6 +6,6 @@ import { validateComment } from '../middlewares/validationMiddleware.js';
 const router = express.Router();
 
 router.post('/:postId', auth, validateComment, addComment);
-router.get('/:postId', auth, getPostComments);
+router.get('/:postId', getPostComments);
 
 export default router;
