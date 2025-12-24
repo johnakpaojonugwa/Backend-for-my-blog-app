@@ -86,6 +86,7 @@ export const getAllPosts = async (req, res) => {
 export const getMyPosts = async (req, res) => {
     try {
         const posts = await Post.find({ author: req.user.id })
+            .populate("author", "-password")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
