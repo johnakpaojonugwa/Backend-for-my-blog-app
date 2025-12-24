@@ -7,7 +7,7 @@ import { validateCreatePost } from '../middlewares/validationMiddleware.js';
 const router = express.Router();
 
 router.post('/', auth, uploadMiddleware, validateCreatePost, createPost);
-router.get('/', auth, getAllPosts);
+router.get('/', getAllPosts);
 router.get('/:mine', getMyPosts);
 router.get('/:id', auth, getPostById);
 router.delete('/:id', auth, deletePost);
