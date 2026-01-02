@@ -23,7 +23,7 @@ export const getPostComments = async (req, res) => {
         if (!postId) {
             return res.status(400).json({ success: false, message: "Post ID is required" });
         }
-        const comments = await Comment.find({ post: postId }).populate('user', 'username, email, avatar').sort({ createdAt: -1 });
+        const comments = await Comment.find({ post: postId }).populate('user', 'username email avatar').sort({ createdAt: -1 });
 
         res.status(200).json({ success: true, count: comments.length, data: comments });
     } catch (error) {
