@@ -1,6 +1,11 @@
 import Post from "../models/post.model.js";
 
-/// CREATE NEW POST
+/**
+ * CREATE POST
+ */
+/**
+ * CREATE POST
+ */
 export const createPost = async (req, res) => {
     try {
         const { title, content, tags } = req.body || {};
@@ -24,6 +29,7 @@ export const createPost = async (req, res) => {
             : tags
                 ? tags.split(",")
                 : [];
+        // Change this line in your controller:
         const cleanTags = [...new Set(rawTags
             .map((tag) => tag?.trim())
             .filter((tag) => tag && tag !== "undefined")
@@ -47,7 +53,9 @@ export const createPost = async (req, res) => {
     }
 };
 
-// GET ALL POSTS
+/**
+ * GET ALL POSTS (with pagination)
+ */
 export const getAllPosts = async (req, res) => {
     try {
         const page = Number(req.query.page) || 1;
@@ -74,10 +82,12 @@ export const getAllPosts = async (req, res) => {
     }
 };
 
-// GET LOGGED-IN USER'S POSTS
+/**
+ * GET LOGGED-IN USER POSTS
+ */
 export const getMyPosts = async (req, res) => {
     try {
-        const posts = await Post.find({ author: req.user.id, isDeleted: false })
+        const posts = await Post.find({ author: req.user.id })
             .populate("author", "-password")
             .sort({ createdAt: -1 });
 
@@ -91,21 +101,20 @@ export const getMyPosts = async (req, res) => {
     }
 };
 
-
-// GET SINGLE POST BY ID
+/**
+ * GET SINGLE POST BY ID
+ */
 export const getPostById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const post = await Post.findOne({
-            _id: id,
-            isDeleted: false
-        }).populate("author", "-password");
+        // Find post by ID and populate author info (exclude password)
+        const post = await Post.findById(id).populate("author", "-password");
 
         if (!post) {
             return res.status(404).json({
                 success: false,
-                message: "Post not found or has been removed",
+                message: "Post not found",
             });
         }
 
@@ -122,38 +131,35 @@ export const getPostById = async (req, res) => {
 };
 
 
-// DELETE POST
+/**
+ * DELETE POST
+ */
 export const deletePost = async (req, res) => {
     try {
-        const post = await Post.findOneAndUpdate({
+        const post = await Post.findOneAndDelete({
             _id: req.params.id,
             author: req.user.id,
-            isDeleted: false
-        }, {
-            $set: {
-                isDeleted: true,
-                deletedAt: new Date()
-            }
-        }, { new: true }
-        );
+        });
 
         if (!post) {
             return res.status(404).json({
                 success: false,
-                message: "Post not found, already deleted, or unauthorized",
+                message: "Post not found or unauthorized",
             });
         }
 
         res.status(200).json({
             success: true,
-            message: "Post moved to trash successfully",
+            message: "Post deleted successfully",
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// LIKE POST
+/**
+ * LIKE POST
+ */
 export const likePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -181,7 +187,9 @@ export const likePost = async (req, res) => {
     }
 };
 
-// DISLIKE POST
+/**
+ * DISLIKE POST
+ */
 export const dislikePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -204,59 +212,6 @@ export const dislikePost = async (req, res) => {
             likes: post.likes.length,
             dislikes: post.dislikes.length,
         });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-
-// Get all soft-deleted posts for the logged-in user
-export const getMyTrash = async (req, res) => {
-    try {
-        const posts = await Post.find({
-            author: req.user.id,
-            isDeleted: true
-        }).sort({ deletedAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            total: posts.length,
-            posts,
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-// Restore a soft-deleted post
-export const restorePost = async (req, res) => {
-    try {
-        const post = await Post.findOneAndUpdate(
-            { _id: req.params.id, author: req.user.id, isDeleted: true },
-            { $set: { isDeleted: false, deletedAt: null } },
-            { new: true }
-        );
-
-        if (!post) return res.status(404).json({ success: false, message: "Post not found in trash" });
-
-        res.status(200).json({ success: true, message: "Post restored successfully" });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-// Permanent delete from the trash 
-export const permanentDelete = async (req, res) => {
-    try {
-        const post = await Post.findOneAndDelete({
-            _id: req.params.id,
-            author: req.user.id,
-            isDeleted: true
-        });
-
-        if (!post) return res.status(404).json({ success: false, message: "Post not found in trash" });
-
-        res.status(200).json({ success: true, message: "Post permanently erased" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
