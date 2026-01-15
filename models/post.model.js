@@ -8,10 +8,11 @@ const postSchema = new mongoose.Schema ({
     backCover: String,
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    isDeleted: { type: Boolean, default: false, index: true },
+    deletedAt: { type: Date, default: null }
 }, { timestamps: true });
 
 const Post = mongoose.model("Post", postSchema);
-
 export default Post;
 
 
